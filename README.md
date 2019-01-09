@@ -2,12 +2,11 @@
  Little API for multi-thread publisher - subscriber broker.
  Broadcast messages to multiple destinations.
 
- Messages are sent by psb_publish_message() and will only be received by psb_get_message() that have subscribed to the matching channel.
- Channel defined as string identifier. Call psb_publish_message() will determine whether a copy of message should be delivered to the subscriber(s)
- by comparing the subscriber's channel name to the initial chars in channel name, up to the size of the channel name.
+ Messages are sent by `psb_publish_message()` and will only be received by `psb_get_message()` that have subscribed to the matching channel.
+ Channel defined as string identifier. Call `psb_publish_message()` will determine whether a copy of message should be delivered to the subscriber(s) by comparing the subscriber's channel name to the initial chars in channel name, up to the size of the channel name.
 
  For example:
- psb_subscribe(subscriber, "logger/");
+ `psb_subscribe(subscriber, "logger/");`
  Will match any message with intial chars being "logger/", for example, message "logger/error" or "logger/info" will match.
 
  Subscriber with zero length channel name matches any message.
