@@ -126,7 +126,7 @@ DEFINE_THREAD(sub_fn, dummyPtr)
 	return NULL;
 }
 
-void psb_test1(void)
+void psb_test_init(void)
 #if defined(_WIN32) || defined(_WIN64) // use the native win32 API on windows
 {
 	HANDLE  pub_thread_id[NPUB];
@@ -223,7 +223,7 @@ void psb_test1(void)
 }
 #endif
 
-void psb_test2()
+void psb_test()
 {
 	volatile int rval = 0;
 	psb_message msg;
@@ -289,8 +289,8 @@ void psb_test2()
 
 int main(int argc, char** argv)
 {
-	psb_test1();
-	//psb_test2();
+	psb_test_init();
+	psb_test();
 	return 0;
 }
 
