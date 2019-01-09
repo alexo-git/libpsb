@@ -126,7 +126,7 @@ DEFINE_THREAD(sub_fn, dummyPtr)
 	return NULL;
 }
 
-void psb_test_init(void)
+void psb_test_multithread(void)
 #if defined(_WIN32) || defined(_WIN64) // use the native win32 API on windows
 {
 	HANDLE  pub_thread_id[NPUB];
@@ -223,74 +223,11 @@ void psb_test_init(void)
 }
 #endif
 
-void psb_test()
-{
-	volatile int rval = 0;
-	psb_message msg;
-	char* data1 = "data1";
-	char* data2 = "data2";
-	char* data3 = "data3";
-
-	psb_broker* broker = DEFAULT_BROKER;
-	broker = psb_new_broker();
-
-	psb_subscriber* subscriber1 = psb_new_subscriber(broker);
-	psb_subscriber* subscriber2 = psb_new_subscriber(broker);
-	psb_subscriber* subscriber3 = psb_new_subscriber(broker);
-	psb_subscriber* subscriber4 = psb_new_subscriber(broker);
-
-	rval = psb_subscribe(subscriber1, "ch1");
-	rval = psb_subscribe(subscriber1, "ch2");
-
-	rval = psb_subscribe(subscriber2, "ch1/topic1");
-	rval = psb_subscribe(subscriber3, "ch1/topic2");
-	rval = psb_subscribe(subscriber4, "ch2/topic1");
-
-	rval = psb_publish_message(broker, "ch1/topic1", data1, strlen(data1)+1);
-	rval = psb_publish_message(broker, "ch1/topic2", data2, strlen(data2)+1);
-	rval = psb_publish_message(broker, "ch2/topic1", data3, strlen(data3)+1);
-	rval = psb_publish_message(broker, "void", data3, strlen(data3)+1);
-
-	rval = psb_get_messages_count(subscriber1); 
-	rval = psb_get_messages_count(subscriber2);
-	rval = psb_get_messages_count(subscriber3);
-	rval = psb_get_messages_count(subscriber4);
-
-	rval = psb_get_message(subscriber1, &msg, -1); psb_free_message(&msg);
-	rval = psb_get_message(subscriber1, &msg, -1); psb_free_message(&msg);
-	rval = psb_get_message(subscriber1, &msg, -1); psb_free_message(&msg);
-	rval = psb_get_message(subscriber2, &msg, -1); psb_free_message(&msg);
-	rval = psb_get_message(subscriber3, &msg, -1); psb_free_message(&msg);
-	rval = psb_get_message(subscriber4, &msg, -1); psb_free_message(&msg);
-
-	rval = psb_get_message(subscriber4, &msg, 1000);  // here we are get timeout
-
-	rval = psb_get_messages_count(subscriber1);
-	rval = psb_get_messages_count(subscriber2);
-	rval = psb_get_messages_count(subscriber3);
-	rval = psb_get_messages_count(subscriber4);
-
-	rval = psb_unsubscribe(subscriber1, "ch2");
-	rval = psb_publish_message(broker, "ch1/topic1", data1, strlen(data1)+1);
-	rval = psb_publish_message(broker, "ch1/topic2", data2, strlen(data2)+1);
-	rval = psb_publish_message(broker, "ch2/topic1", data3, strlen(data3)+1);
-
-	rval = psb_get_messages_count(subscriber1);
-	rval = psb_get_messages_count(subscriber2);
-	rval = psb_get_messages_count(subscriber3);
-	rval = psb_get_messages_count(subscriber4);
-
-	//rval = psb_delete_subscriber(subscriber2);
-
-	rval = psb_delete_broker(broker);
-}
-
 
 
 int main(int argc, char** argv)
 {
-	psb_test_init();
-	psb_test();
+	psb_test_multithread();
 	return 0;
 }
 
