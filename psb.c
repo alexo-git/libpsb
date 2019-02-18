@@ -427,17 +427,19 @@ int psb_publish_message(psb_broker* broker, char* channel, void* data, int datal
 	// check arguments
 	if ((channel != NULL) && (data != NULL) && (datalen > 0))
 	{
+		
+		// enter critical section
+		mutex_lock(&broker->mutex);
+		
 		if (broker->subscriber_list != NULL)
 		{
 			// iterate over all subscribers in list and check channel name match
 			psb_subscriber* iterator=broker->subscriber_list;
 			do
 			{
-				mutex_lock(&broker->mutex);
 				res = ptrie_match_str(iterator->ptrie, (uint8_t*)channel, strlen(channel));
-				mutex_unlock(&broker->mutex);
 
-				// if channel name match, duplicatedata and put it to queue
+				// if channel name match, duplicate data and put it to queue
 				if (res)
 				{
 					psb_message* msg = (psb_message*)malloc(sizeof(struct psb_message));
@@ -451,6 +453,8 @@ int psb_publish_message(psb_broker* broker, char* channel, void* data, int datal
 					}
 					else
 					{
+						// leave critical section
+						mutex_unlock(&broker->mutex);
 						return -ENOMEM;
 					}
 				}
@@ -459,6 +463,9 @@ int psb_publish_message(psb_broker* broker, char* channel, void* data, int datal
 			}
 			while (iterator != broker->subscriber_list);
 		}
+		
+		// leave critical section
+		mutex_unlock(&broker->mutex);
 	}
 	else
 	{
