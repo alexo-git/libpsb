@@ -427,7 +427,6 @@ int psb_publish_message(psb_broker* broker, char* channel, void* data, int datal
 	// check arguments
 	if ((channel != NULL) && (data != NULL) && (datalen > 0))
 	{
-		
 		// enter critical section
 		mutex_lock(&broker->mutex);
 		
@@ -486,6 +485,7 @@ static void slist_insert(psb_subscriber* list, psb_subscriber* entry)
 }
 
 // remove subscriber from subscriber's double-linked liststatic void slist_remove(psb_subscriber* entry)
+static void slist_remove(psb_subscriber* entry) 
 {
 	entry->next->prev = entry->prev;
 	entry->prev->next = entry->next;
